@@ -299,6 +299,7 @@ def _split_sentences_fast(
     strip: bool,
     preprocessor: SentencePreprocessor,
     postprocessor: SentencePostprocessor,
+    **kwargs,
 ):
     backup_sentence = preprocessor.backup(text)
     syllables = backend.pos(backup_sentence, drop_space=False)

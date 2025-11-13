@@ -77,24 +77,32 @@ def split_sentences(
     _postprocessor = postprocessors[ignores_tuple]
 
     if backend_analyzer._backend == "fast":
+        assert return_morphemes is False, "`return_morphemes` is not supported with 'fast' backend."
+
         try:
             from kss_cython import split_sentences_fast as _split_sentences_fast
         except ImportError:
             from kss._modules.sentences.sentence_splitter_fast import _split_sentences_fast
 
-        split_fn = _split_sentences_fast
+        split_fn = partial(
+            _split_sentences_fast,
+            backend=backend_analyzer,
+            strip=strip,
+            preprocessor=_preprocessor,
+            postprocessor=_postprocessor,
+        )
     else:
-        split_fn = _split_sentences
-
-    return _run_job(
-        func=partial(
-            split_fn,
+        split_fn = partial(
+            _split_sentences,
             backend=backend_analyzer,
             strip=strip,
             return_morphemes=return_morphemes,
             preprocessor=_preprocessor,
             postprocessor=_postprocessor,
-        ),
+        )
+
+    return _run_job(
+        func=split_fn,
         inputs=text,
         num_workers=num_workers,
     )
