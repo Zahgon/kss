@@ -25,36 +25,12 @@ def complete_syllable(syllable):
         요
 
     """
-    syllable = list(syllable)
-    components = [type(ph) for ph in syllable]
-    if Choseong not in components:
-        syllable.insert(0, Choseong(NG))
-    if Jungseong not in components:
-        syllable.insert(1, Jungseong(EU))
-    if Jongseong not in components:
-        syllable.insert(2, Jungseong(Null))
-    return tuple((ph.letter for ph in syllable))
+    pass
 
 
 def complete_syllables(phonemes):
     """Separates each syllables and completes every syllable."""
-    components, syllable = [Choseong, Jungseong, Jongseong], []
-    if phonemes:
-        for ph in phonemes:
-            comp = type(ph)
-            new_syllable = (comp is Impurity or syllable and
-                            components.index(comp) <=
-                            components.index(type(syllable[-1])))
-            if new_syllable:
-                if syllable:
-                    yield complete_syllable(syllable)
-                    syllable = []
-                if comp is Impurity:
-                    yield (ph,)
-                    continue
-            syllable.append(ph)
-        if syllable:
-            yield complete_syllable(syllable)
+    pass
 
 
 def split_phonemes(word):
@@ -64,17 +40,7 @@ def split_phonemes(word):
         (<Choseong 'ㅇ'>, <Jungseong 'ㅏ'>, <Jongseong 'ㄴ'>,
          <Choseong 'ㄴ'>, <Jungseong 'ㅕ'>, <Jongseong 'ㅇ'>)
     """
-    result = []
-    for c in word:
-        try:
-            c = split(c)
-            result.append(Choseong(c[0]))
-            result.append(Jungseong(c[1]))
-            if c[2] is not Null:
-                result.append(Jongseong(c[2]))
-        except UnicodeHangulError:
-            result.append(Impurity(c))
-    return tuple(result)
+    pass
 
 
 def join_phonemes(phonemes):
@@ -85,6 +51,4 @@ def join_phonemes(phonemes):
         안녕
 
     """
-    syllables = complete_syllables(phonemes)
-    chars = (join(syl) for syl in syllables)
-    return reduce(unicode.__add__, chars)
+    pass

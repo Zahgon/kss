@@ -41,38 +41,8 @@ def collocate(
     References:
         This was copied from [Kollocate](https://github.com/Kyubyong/kollocate) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return {}
-
-    verbose = _check_type(verbose, "verbose", bool)
-    num_workers = _check_num_workers(text, num_workers)
-
-    if not isinstance(text, str):
-        verbose = False
-        logger.warn(
-            "Verbose mode is not supported for batch processing. "
-            "It will be turned off automatically."
-        )
-
-    return _run_job(
-        func=partial(
-            _collocate,
-            verbose=verbose,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _collocate(text: str, verbose: bool = False):
-    outputs = kollocate_obj(text)
-    if verbose:
-        for pos, cols in outputs.items():
-            print(text + " as " + pos)
-            for pos2, cols2 in cols.items():
-                print(pos2, ", ".join(word + "(" + str(cnt) + ")" for word, cnt in cols2))
-            print()
-
-    return outputs
+    pass

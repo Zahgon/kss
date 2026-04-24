@@ -59,39 +59,7 @@ def normalize(
         >>> normalize(text, allow_doubled_spaces=False, allow_html_tags=False, allow_html_escape=False, allow_halfwidth_hangul=False, allow_hangul_jamo=False, allow_invisible_chars=False, reduce_char_repeats_over=2, reduce_emoticon_repeats_over=2)
         '안녕하세요 ㅋㅋ 오늘은 날이 참 좋네요.\\n200 < 300 & 400'
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    if normalization_type is not None:
-        normalization_type = _check_type(normalization_type, "normalization_type", str)
-    allow_doubled_spaces = _check_type(allow_doubled_spaces, "allow_doubled_spaces", bool)
-    allow_html_tags = _check_type(allow_html_tags, "allow_html_tags", bool)
-    allow_html_escape = _check_type(allow_html_escape, "allow_html_escape", bool)
-    allow_halfwidth_hangul = _check_type(allow_halfwidth_hangul, "allow_halfwidth_hangul", bool)
-    allow_hangul_jamo = _check_type(allow_hangul_jamo, "allow_hangul_jamo", bool)
-    reduce_char_repeats_over = _check_type(reduce_char_repeats_over, "reduce_char_repeats_over", int)
-    reduce_emoticon_repeats_over = _check_type(reduce_emoticon_repeats_over, "reduce_emoticon_repeats_over", int)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=partial(
-            _normalize,
-            normalization_type=normalization_type,
-            allow_doubled_spaces=allow_doubled_spaces,
-            allow_html_tags=allow_html_tags,
-            allow_html_escape=allow_html_escape,
-            allow_halfwidth_hangul=allow_halfwidth_hangul,
-            allow_hangul_jamo=allow_hangul_jamo,
-            allow_invisible_chars=allow_invisible_chars,
-            reduce_char_repeats_over=reduce_char_repeats_over,
-            reduce_emoticon_repeats_over=reduce_emoticon_repeats_over,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _normalize(
@@ -106,40 +74,4 @@ def _normalize(
     reduce_char_repeats_over=sys.maxsize,
     reduce_emoticon_repeats_over=sys.maxsize,
 ):
-    if normalization_type is not None:
-        if not isinstance(normalization_type, str):
-            raise TypeError("normalization_type should be a string")
-
-        normalization_type = normalization_type.upper()
-        if normalization_type not in ['NFC', 'NFKC', 'NFD', 'NFKD']:
-            raise ValueError("normalization_type should be one of 'NFC', 'NFKC', 'NFD', 'NFKD'")
-
-        text = unicodedata.normalize(normalization_type, text)
-
-    if not allow_doubled_spaces:
-        text = doubled_spaces_pattern.sub('\\1', text)
-
-    if not allow_html_tags:
-        text = BeautifulSoup(text, 'html.parser').text
-
-    if not allow_html_escape:
-        text = html.unescape(text)
-
-    if not allow_halfwidth_hangul:
-        # NFKC and NFKD convert halfwidth Hangul to fullwidth Hangul automatically.
-        text = _half2full(text) if normalization_type is None or "K" not in normalization_type else text
-
-    if not allow_hangul_jamo:
-        # NFC and NFKC convert Hangul jamo to Hangul compatibility jamo automatically.
-        text = _j2h(text) if normalization_type is None or "C" not in normalization_type else text
-
-    if not allow_invisible_chars:
-        text = _remove_invisible_chars(text)
-
-    if 0 < reduce_emoticon_repeats_over < sys.maxsize:
-        text = _reduce_emoticon_repeats(text, reduce_emoticon_repeats_over)
-
-    if 0 < reduce_char_repeats_over < sys.maxsize:
-        text = _reduce_char_repeats(text, reduce_char_repeats_over)
-
-    return text
+    pass

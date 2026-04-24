@@ -179,22 +179,8 @@ def remove_invisible_chars(
         >>> remove_invisible_chars(text)
         '안녕하세요'
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=_remove_invisible_chars,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _remove_invisible_chars(text: str) -> str:
-    text = text.translate(UNICODE_TO_REMOVE)
-    text = text.translate(UNICODE_TO_REPLACE)
-    return text
+    pass

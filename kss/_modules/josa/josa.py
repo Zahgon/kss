@@ -34,17 +34,7 @@ def select_josa(
     References:
         This was copied from [tossi](https://github.com/what-studio/tossi) and modified by Kss
     """
-    prefix, josa = _check_text(prefix, josa, "prefix", "josa")
-    num_workers = _check_num_workers(prefix, josa, "prefix", "josa", num_workers)
-
-    return _run_job(
-        func=_select_josa,
-        input_1=prefix,
-        input_2=josa,
-        input_1_name="prefix",
-        input_2_name="josa",
-        num_workers=num_workers,
-    )
+    pass
 
 
 def combine_josa(
@@ -75,14 +65,4 @@ def combine_josa(
     References:
         This was copied from [tossi](https://github.com/what-studio/tossi) and modified by Kss
     """
-    prefix, josa = _check_text(prefix, josa, "prefix", "josa")
-    num_workers = _check_num_workers(prefix, josa, "prefix", "josa", num_workers)
-
-    return _run_job(
-        func=_combine_josa,
-        input_1=prefix,
-        input_2=josa,
-        input_1_name="prefix",
-        input_2_name="josa",
-        num_workers=num_workers,
-    )
+    pass

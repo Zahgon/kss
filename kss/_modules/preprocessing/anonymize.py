@@ -173,64 +173,7 @@ def anonymize(
         >>> print(output)
         "제 전화번호는 <PHONE_NUMBER>, 이메일 주소는 <EMAIL>입니다."
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    phone_number_anonymization = _check_type(phone_number_anonymization, "phone_number_anonymization", bool)
-    rrn_anonymization = _check_type(rrn_anonymization, "rrn_anonymization", bool)
-    card_anonymization = _check_type(card_anonymization, "card_anonymization", bool)
-    email_anonymization = _check_type(email_anonymization, "email_anonymization", bool)
-    bank_account_anonymization = _check_type(bank_account_anonymization, "bank_account_anonymization", bool)
-    credit_card_anonymization = _check_type(credit_card_anonymization, "credit_card_anonymization", bool)
-    zip_anonymization = _check_type(zip_anonymization, "zip_anonymization", bool)
-    bitcoin_anonymization = _check_type(bitcoin_anonymization, "bitcoin_anonymization", bool)
-    url_anonymization = _check_type(url_anonymization, "url_anonymization", bool)
-    ip_v6_anonymization = _check_type(ip_v6_anonymization, "ip_v6_anonymization", bool)
-    ip_v4_anonymization = _check_type(ip_v4_anonymization, "ip_v4_anonymization", bool)
-    phone_number_replacement = _check_type(phone_number_replacement, "phone_number_replacement", str)
-    rrn_replacement = _check_type(rrn_replacement, "rrn_replacement", str)
-    card_replacement = _check_type(card_replacement, "card_replacement", str)
-    email_replacement = _check_type(email_replacement, "email_replacement", str)
-    bank_account_replacement = _check_type(bank_account_replacement, "bank_account_replacement", str)
-    credit_card_replacement = _check_type(credit_card_replacement, "credit_card_replacement", str)
-    zip_replacement = _check_type(zip_replacement, "zip_replacement", str)
-    bitcoin_replacement = _check_type(bitcoin_replacement, "bitcoin_replacement", str)
-    url_replacement = _check_type(url_replacement, "url_replacement", str)
-    ip_v6_replacement = _check_type(ip_v6_replacement, "ip_v6_replacement", str)
-    ip_v4_replacement = _check_type(ip_v4_replacement, "ip_v4_replacement", str)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=partial(
-            _anonymize,
-            phone_number_anonymization=phone_number_anonymization,
-            rrn_anonymization=rrn_anonymization,
-            card_anonymization=card_anonymization,
-            email_anonymization=email_anonymization,
-            bank_account_anonymization=bank_account_anonymization,
-            credit_card_anonymization=credit_card_anonymization,
-            zip_anonymization=zip_anonymization,
-            bitcoin_anonymization=bitcoin_anonymization,
-            url_anonymization=url_anonymization,
-            ip_v6_anonymization=ip_v6_anonymization,
-            ip_v4_anonymization=ip_v4_anonymization,
-            phone_number_replacement=phone_number_replacement,
-            rrn_replacement=rrn_replacement,
-            card_replacement=card_replacement,
-            email_replacement=email_replacement,
-            bank_account_replacement=bank_account_replacement,
-            credit_card_replacement=credit_card_replacement,
-            zip_replacement=zip_replacement,
-            bitcoin_replacement=bitcoin_replacement,
-            url_replacement=url_replacement,
-            ip_v6_replacement=ip_v6_replacement,
-            ip_v4_replacement=ip_v4_replacement,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _anonymize(
@@ -258,16 +201,4 @@ def _anonymize(
     ip_v6_replacement: str = "<IPV6>",
     ip_v4_replacement: str = "<IPV4>",
 ):
-    text = re.sub(PHONE_NUMBER_PATTERN, phone_number_replacement, text) if phone_number_anonymization else text
-    text = re.sub(RRN_PATTERN, rrn_replacement, text) if rrn_anonymization else text
-    text = re.sub(CARD_PATTERN, card_replacement, text) if card_anonymization else text
-    text = re.sub(EMAIL_PATTERN, email_replacement, text) if email_anonymization else text
-    text = re.sub(BANK_ACCOUNT_PATTERN, bank_account_replacement, text) if bank_account_anonymization else text
-    text = re.sub(CREDIT_CARD_PATTERN, credit_card_replacement, text) if credit_card_anonymization else text
-    text = re.sub(ZIP_PATTERN, zip_replacement, text) if zip_anonymization else text
-    text = re.sub(BITCOIN_PATTERN, bitcoin_replacement, text) if bitcoin_anonymization else text
-    text = re.sub(URL_PATTERN_1, url_replacement, text) if url_anonymization else text
-    text = re.sub(URL_PATTERN_2, url_replacement, text) if url_anonymization else text
-    text = re.sub(IPV6_PATTERN, ip_v6_replacement, text) if ip_v6_anonymization else text
-    text = re.sub(IPV4_PATTERN, ip_v4_replacement, text) if ip_v4_anonymization else text
-    return text
+    pass

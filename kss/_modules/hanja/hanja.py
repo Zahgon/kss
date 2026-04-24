@@ -36,18 +36,7 @@ def split_hanja(
     References:
         This was copied from [hanja](https://github.com/suminb/hanja) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=_split_hanja,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def is_hanja(
@@ -79,20 +68,7 @@ def is_hanja(
     References:
         This was copied from [hanja](https://github.com/suminb/hanja) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return False
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=_is_hanja,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def hanja2hangul(
@@ -126,44 +102,9 @@ def hanja2hangul(
     References:
         This was copied from [hanja](https://github.com/suminb/hanja) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-    combination = _check_type(combination, "combination", bool)
-    reverse = _check_type(reverse, "reverse", bool)
-    html = _check_type(html, "html", bool)
-
-    if combination is False and reverse is True:
-        raise ValueError("`reverse` is only available when `combination` is True")
-    if combination is False and html is True:
-        raise ValueError("`html` is only available when `combination` is True")
-
-    return _run_job(
-        func=partial(
-            _hanja2hangul,
-            combination=combination,
-            reverse=reverse,
-            html=html,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _hanja2hangul(text, combination=False, reverse=False, html=False):
     # translate hangul to hanja
-    if combination is False:
-        return translate(text, 'substitution')
-    elif combination is True and reverse is False and html is False:
-        return translate(text, 'combination-text')
-    elif combination is True and reverse is True and html is False:
-        return translate(text, 'combination-text-reversed')
-    elif combination is True and reverse is False and html is True:
-        return translate(text, 'combination-html')
-    elif combination is True and reverse is True and html is True:
-        return translate(text, 'combination-html-reversed')
-    else:
-        raise ValueError("Invalid combination of `combination`, `reverse`, and `html`")
+    pass

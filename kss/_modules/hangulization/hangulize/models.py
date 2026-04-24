@@ -40,19 +40,13 @@ EMPTY_TUPLE = ()
 
 
 def cached_property(func, name=None):
-    if name is None:
-        name = func.__name__
     def get(self):
-        try:
-            return self.__dict__[name]
-        except KeyError:
-            val = func(self)
-            self.__dict__[name] = val
-            return val
-    functools.update_wrapper(get, func)
+        pass
+
     def del_(self):
-        self.__dict__.pop(name, None)
-    return property(get, None, del_)
+        pass
+
+    pass
 
 
 class Phoneme(object):
@@ -131,17 +125,7 @@ class Notation(object):
 
     def items(self, left_edge=False, right_edge=False, lang=None):
         """Yields each notation rules as regex."""
-        for one in self.rules:
-            pattern = one[0]
-            # accept *args
-            if len(one) == 2:
-                val = one[1]
-                if isinstance(val, Phoneme):
-                    val = val,
-            # accept args(a tuple instance)
-            else:
-                val = one[1:]
-            yield pattern, val
+        pass
 
     @property
     def chars(self):
@@ -196,23 +180,21 @@ class Language(object):
     def _steal_specials(self):
         def keep(match, rewrite):
             """keep special characters."""
-            self._specials.append(match.group(0))
-            return SPECIAL
-        esc = '(%s)' % '|'.join(re.escape(x) for x in
-                                self.__special__ + self.__tmp__)
-        return Rewrite(esc, keep)
+            pass
+
+        pass
 
     @cached_property
     def _recover_specials(self):
         def escape(match, rewrite):
             """escape special characters."""
-            return (Impurity(self._specials.pop(0)),)
-        return Rewrite(SPECIAL, escape)
+            pass
+
+        pass
 
     @cached_property
     def _remove_tmp(self):
-        tmp = '(%s)' % '|'.join(re.escape(x) for x in self.__tmp__)
-        return Rewrite(tmp, None)
+        pass
 
     @property
     def chars_pattern(self):
@@ -222,46 +204,17 @@ class Language(object):
     def split(self, string):
         """Splits words from the string. Each words have only valid characters.
         """
-        pattern = '[^%s]+' % self.chars_pattern
-        return re.split(pattern, string)
+        pass
 
     def transcribe(self, string, logger=None):
         """Returns :class:`Phoneme` instance list from the word."""
-        string = re.sub(r'\s+', SPACE, string)
-        string = re.sub(r'^|$', EDGE, string)
-        self._specials = []
-        phonemes = []
-
-        # steal special characters
-        string = self._steal_specials(string, phonemes)
-        # apply the notation
-        for rewrite in self.notation:
-            string = rewrite(string, phonemes, lang=self, logger=logger)
-        # remove temporary characters
-        string = self._remove_tmp(string, phonemes)
-        # recover special characters
-        string = self._recover_specials(string, phonemes)
-
-        # post processing
-        string = re.sub('^' + BLANK, '', string)
-        string = re.sub(BLANK + '$', '', string)
-        phonemes = phonemes[1:-1]
-        string = _hold_spaces(string, phonemes)
-        string = _remove_zwsp(string, phonemes)
-        string = _pass_unmatched(string, phonemes)
-
-        # flatten
-        flat_phonemes = []
-        for phs in phonemes:
-            if phs:
-                flat_phonemes.extend(phs)
-        return flat_phonemes
+        pass
 
     def normalize(self, string):
         """Before transcribing, normalizes the string. You could specify the
         different normalization for the language with overriding this method.
         """
-        return string
+        pass
 
     def hangulize(self, string, logger=None):
         """Hangulizes the string::
@@ -272,23 +225,10 @@ class Language(object):
             아카찬
 
         """
-        from kss._modules.hangulization.hangulize.processing import complete_syllables
         def stringify(syllable):
-            if isinstance(syllable[0], Impurity):
-                return syllable[0].letter
-            else:
-                return join(syllable)
-        string = self.normalize(string)
-        logger and logger.info(">> '%s'" % string)
-        phonemes = self.transcribe(string, logger=logger)
-        try:
-            syllables = complete_syllables(phonemes)
-            result = [stringify(syl) for syl in syllables]
-            hangulized = ''.join(result)
-        except TypeError:
-            hangulized = u''
-        logger and logger.info('=> %s' % hangulized)
-        return hangulized
+            pass
+
+        pass
 
     @property
     def iso639_1(self):
@@ -316,10 +256,13 @@ class Rewrite(object):
     LOOKBEHIND_PATTERN = re.compile('^(?P<edge>(?:\^(?:\^)?)?){([^}]+?)}')
     LOOKAHEAD_PATTERN = re.compile('{([^}]+?)}(?P<edge>(?:\$(?:\$)?)?)$')
     def NEGATIVE(regex):
-        pattern = regex.pattern.replace('{', '{~')
-        return re.compile(pattern)
-    NEGATIVE_LOOKBEHIND_PATTERN = NEGATIVE(LOOKBEHIND_PATTERN)
-    NEGATIVE_LOOKAHEAD_PATTERN = NEGATIVE(LOOKAHEAD_PATTERN)
+        pass
+    try:
+        NEGATIVE_LOOKBEHIND_PATTERN = NEGATIVE(LOOKBEHIND_PATTERN)
+        NEGATIVE_LOOKAHEAD_PATTERN = NEGATIVE(LOOKAHEAD_PATTERN)
+    except Exception:
+        NEGATIVE_LOOKBEHIND_PATTERN = None
+        NEGATIVE_LOOKAHEAD_PATTERN = None
     del NEGATIVE
 
     def __init__(self, pattern, val):
@@ -338,47 +281,7 @@ class Rewrite(object):
         if phonemes:
             deletions = []
         def repl(match):
-            val = self.val(match, self) if callable(self.val) else self.val
-            repls.append(val)
-            start, end = match.span()
-
-            if val:
-                is_tuple = isinstance(val, tuple)
-                if not is_tuple:
-                    if lang:
-                        # variable replacement
-                        cls = type(self)
-                        srcvars = cls.find_actual_variables(self.pattern)
-                        dstvars = cls.find_actual_variables(self.val)
-                        srcvars, dstvars = list(srcvars), list(dstvars)
-                        if len(srcvars) == len(dstvars) == 1:
-                            src = getattr(lang, srcvars[0].group('name'))
-                            dst = getattr(lang, dstvars[0].group('name'))
-                            if len(src) != len(dst):
-                                msg = 'the destination variable should ' \
-                                      'have the same length with the ' \
-                                      'source variable'
-                                raise ValueError(msg)
-                            dictionary = dict(zip(src, dst))
-                            let = dictionary[match.group(0)]
-                            val = self.VARIABLE_PATTERN.sub(let, val)
-                        # group reference
-                        val = re.sub(r'\\(\d+)',
-                                     lambda m: match.group(int(m.group(1))),
-                                     val)
-                    if phonemes:
-                        for x in range(len(val) - len(match.group(0))):
-                            phonemes.insert(start, None)
-                    return val
-                elif phonemes and is_tuple:
-                    # toss phonemes, and check the matched string
-                    phonemes[start] = val
-                    return DONE * (end - start)
-            else:
-                # when val is None, the matched string should remove
-                if phonemes:
-                    deletions.append((start, end))
-                return ''
+            pass
 
         if logger:
             prev = string
@@ -414,78 +317,58 @@ class Rewrite(object):
         return string
 
     def compile_pattern(self, lang=None):
-        if lang not in self.__regexes__:
-            regex = re.compile(type(self).regexify(self.pattern, lang))
-            self.__regexes__[lang] = regex
-        return self.__regexes__[lang]
+        pass
 
     @classmethod
     def regexify(cls, pattern, lang=None):
-        regex = pattern
-        if lang:
-            regex = cls.regexify_variable(regex, lang)
-        regex = cls.regexify_negative_lookaround(regex)
-        regex = cls.regexify_lookaround(regex)
-        regex = cls.regexify_edge_of_word(regex)
-        return regex
+        pass
 
     @classmethod
     def regexify_edge_of_word(cls, regex):
-        left_edge = r'(?<=\1%s)' % BLANK
-        right_edge = r'(?=%s\1)' % BLANK
-        regex = cls.LEFT_EDGE_PATTERN.sub(left_edge, regex)
-        regex = cls.RIGHT_EDGE_PATTERN.sub(right_edge, regex)
-        return regex
+        pass
 
     def _make_lookaround(behind_pattern, ahead_pattern,
                          behind_prefix, ahead_prefix):
         @staticmethod
         def meth(regex):
             def lookbehind(match):
-                edge = re.sub('\^$', BLANK, match.group('edge'))
-                return '(?' + behind_prefix + edge + \
-                       '(?:' + match.group(2) + '))'
-            def lookahead(match):
-                edge = re.sub('^\$', BLANK, match.group('edge'))
-                return '(?' + ahead_prefix + \
-                       '(?:' + match.group(1) + ')' + edge + ')'
-            regex = behind_pattern.sub(lookbehind, regex)
-            regex = ahead_pattern.sub(lookahead, regex)
-            return regex
-        return meth
+                pass
 
-    _positive = _make_lookaround(LOOKBEHIND_PATTERN,
-                                 LOOKAHEAD_PATTERN,
-                                 '<=', '=')
-    _negative = _make_lookaround(NEGATIVE_LOOKBEHIND_PATTERN,
-                                 NEGATIVE_LOOKAHEAD_PATTERN,
-                                 '<!', '!')
-    regexify_lookaround = _positive
-    regexify_negative_lookaround = _negative
-    del _make_lookaround, _positive, _negative
+            def lookahead(match):
+                pass
+
+            pass
+
+        pass
+    try:
+        _positive = _make_lookaround(LOOKBEHIND_PATTERN,
+                                     LOOKAHEAD_PATTERN,
+                                     '<=', '=')
+        _negative = _make_lookaround(NEGATIVE_LOOKBEHIND_PATTERN,
+                                     NEGATIVE_LOOKAHEAD_PATTERN,
+                                     '<!', '!')
+        regexify_lookaround = _positive
+        regexify_negative_lookaround = _negative
+        del _make_lookaround, _positive, _negative
+    except Exception:
+        regexify_lookaround = None
+        regexify_negative_lookaround = None
+        try:
+            del _make_lookaround, _positive, _negative
+        except Exception:
+            pass
 
     @classmethod
     def regexify_variable(cls, regex, lang):
         def to_variable(match):
-            var = getattr(lang, match.group('name'))
-            return '(%s)' % '|'.join(re.escape(x) for x in var)
-        regex = cls.VOWELS_PATTERN.sub('<vowels>', regex)
-        regex = cls.VARIABLE_PATTERN.sub(to_variable, regex)
-        return regex
+            pass
+
+        pass
 
     @classmethod
     def find_actual_variables(cls, pattern):
         # pass when there's no any variable patterns
-        if not cls.VOWELS_PATTERN.search(pattern) and \
-           not cls.VARIABLE_PATTERN.search(pattern):
-            return EMPTY_TUPLE
-        try:
-            pattern = cls.LOOKBEHIND_PATTERN.sub(DONE, pattern)
-            pattern = cls.LOOKAHEAD_PATTERN.sub(DONE, pattern)
-            pattern = cls.VOWELS_PATTERN.sub('<>', pattern)
-            return cls.VARIABLE_PATTERN.finditer(pattern)
-        except TypeError:
-            return EMPTY_TUPLE
+        pass
 
 
 _remove_zwsp = Rewrite(ZWSP, (Impurity(''),))

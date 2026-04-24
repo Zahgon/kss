@@ -19,35 +19,8 @@ with open(WORDNET_JSON_PATH, "r", encoding="utf-8") as f:
 
 
 def get_synonyms(word, min_length=None):
-    synonyms = set()
-    synsets = WORDNET["lemmas"].get(word, None)
-
-    if synsets is None:
-        return []
-
-    for syn in synsets:
-        synonym = WORDNET["synsets"][syn]["lemmas"]
-        if min_length is not None:
-            synonym = [s for s in synonym if len(s) >= min_length]
-        synonyms.update(synonym)
-
-    if word in synonyms:
-        synonyms.remove(word)
-
-    return list(synonyms)
+    pass
 
 
 def correct_josa(text: str):
-    morphemes = split_morphemes(text, drop_space=False)
-    outputs = []
-    previous = None
-    for i, (word, pos) in enumerate(morphemes):
-        if pos.startswith("J") and previous is not None:
-            if not previous[1].startswith("S"):
-                outputs.append(select_josa(previous[0], word))
-            else:
-                outputs.append(word)
-        else:
-            outputs.append(word)
-        previous = (word, pos)
-    return "".join(outputs)
+    pass

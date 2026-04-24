@@ -52,14 +52,7 @@ class SentenceSplitter(SentenceProcessor):
             분할 시작 규칙:
                 종결부호(SF), 캐릭터 휴리스틱 규칙, 4개의 어말어미(EF, EC, ETN, ETM) 규칙 중 하나라도 성립하면 분할한다.
         """
-        return (
-            self._sf()
-            or self._ef()
-            or self._ec()
-            or self._etn()
-            or self._etm()
-            or self._char()
-        )
+        pass
 
     def check_split_end(self) -> Tuple[bool, bool]:
         """
@@ -80,46 +73,7 @@ class SentenceSplitter(SentenceProcessor):
                 2. 만약 현재 문자가 하이푼(-)인데 공백을 제외한 다음 문자가 종결부호(SF)가 아닌 경우 지금 즉시 분할한다.
                 3. 만약 현재 문자가 자음인데 이전문자가 공백이고 다음 문자가 종결부호(SF)이며 다다음 문자가 공백이면 즉시 분할한다.
         """
-
-        no_more_all_s = not self._check_pos(
-            self._all_s_poses_wo_qtn, exclude=self._all_s_exclude
-        )
-
-        end_split = no_more_all_s and not (
-            (self._check_text(",") and self._check_next_text(","))
-            or (self._check_text(",") and self._check_prev_text(","))
-        )
-
-        end_split = end_split and not self.syllable.check_pos("JAMO")
-        end_split = end_split and not self.check_split_start()
-        end_split_exception = False
-
-        if not end_split:
-            # 예외 1
-            if self._check_prev_skip_sp_text(
-                ("?", "!")
-            ) and self._check_next_skip_sp_text("."):
-                end_split = True
-                end_split_exception = True
-
-            # 예외 2
-            elif self._check_text(("－", "-", "–")) and not (
-                self._check_next_skip_sp_pos("SF")
-                or self._check_next_text(("－", "-", "–"))
-            ):
-                end_split = True
-                end_split_exception = True
-
-            elif (
-                self.syllable.prev.check_pos("SP")
-                and self.syllable.check_text(*jaum)
-                and self.syllable.next.check_text(".")
-                and self.syllable.next.next.check_text(" ")
-            ):
-                end_split = True
-                end_split_exception = True
-
-        return end_split, end_split_exception
+        pass
 
     ###################
     # Splitting Rules #
@@ -135,8 +89,7 @@ class SentenceSplitter(SentenceProcessor):
         Notes:
             단락기호(¶)가 등장하면 곧바로 분리한다.
         """
-        available = self.syllable.check_text("¶")
-        return available
+        pass
 
     def _sf(self) -> bool:
         """
@@ -161,76 +114,7 @@ class SentenceSplitter(SentenceProcessor):
                 9. 현재 문자가 ' no.', ' No.', ' vol.', ' p.', ' pp.', ' page.', ' al.', ' ed.', ' eds.'
                     ' 항.', ' 조.', ' 호.', ' 절.', ' 권.', " 쪽.' 등에 존재하면 분할하지 않는다.
         """
-
-        available = False
-
-        # 종결부호 분할 규칙
-        if self._check_pos("SF") and (
-            self._check_next_pos("SP")
-            or self._check_next_skip_sp_pos(("SY", "SSO", "EMOJI", "JAMO"))
-        ):
-            # 예외 1
-            available = not self._prev_skip(("SP", "SF")).text.isnumeric()
-
-            # 예외 2
-            available = available and not (
-                self._check_prev_skip_spsf_pos("VCP", exclude="+VCP")
-            )
-
-            # 예외 3
-            available = available and not (
-                self._check_prev_skip_spsf_pos("J", exclude=("EMOJI", "JAMO", "+J"))
-                and self._check_text(".")
-                and self._check_prev_text(".")
-            )
-
-            # 예외 4
-            available = available and not (
-                self._check_next_skip_spsf_pos("VCP", exclude="+VCP")
-            )
-
-            # 예외 5
-            available = available and not self._check_prev_skip_spsf_pos(("MAJ", "MAG"))
-
-            # 예외 6
-            available = available and not (
-                (
-                    self._check_prev_skip_spsf_pos("EC")
-                    and self._check_prev_skip_spsf_text("만")
-                )
-                or (
-                    self._check_prev_skip_spsf_pos(("EC", "NNB"))
-                    and self._check_prev_skip_spsf_text("데")
-                    and self._check_prev_text(".")
-                )
-            )
-
-            # 예외 7
-            next_skip_sp = self._next_skip("SP")
-            prev_skip_sp = self._prev_skip("SP")
-
-            available = (
-                available
-                and not (
-                    not next_skip_sp.check_text(".")
-                    and next_skip_sp.next_skip("SP").check_text(".")
-                )
-                and not (
-                    not prev_skip_sp.check_text(".")
-                    and prev_skip_sp.prev_skip("SP").check_text(".")
-                )
-            )
-
-            # 예외 8
-            available = available and not self._check_next_is_unavailable_split()
-
-            # 예외 9
-            available = available and not (
-                self._check_text(".")
-                and self._check_multiple_prev_texts_from_before(*sf_exception)
-            )
-
-        return available
+        pass
 
     def _ef(self) -> bool:
         """
@@ -250,38 +134,7 @@ class SentenceSplitter(SentenceProcessor):
                 4. 현재 문자 바로 이전 문자가 공백(SP)이고 그 이전 문자가 보조용언(VX)이면 분할하지 않는다.
                 5. 현재 문자 뒤로 등장하는 한글 문자열이 몇가지 분할하지 않아야 하는 경우에 속하면 분할하지 않는다.
         """
-
-        available = False
-
-        # 종결어미 분할 규칙
-        if self._check_pos("EF", exclude="+J") and not self._check_next_skip_sp_pos(
-            "EF"
-        ):
-            # 예외 1
-            available = not self._check_non_doubled_comma()
-
-            # 예외 2
-            available = available and not (
-                self._check_next_skip_sp_pos(
-                    ("EC", "J", "VX"),
-                    exclude=("MAJ", "EMOJI", "JAMO", "+VX", "+EC", "+J", "VX+"),
-                )
-            )
-
-            # 예외 3
-            if available and self._check_prev_pos("NP+VCP+EF"):
-                available = self._check_next_pos("SF")
-
-            # 예외 4
-            available = available and not (
-                self._check_prev_text(" ")
-                and self.syllable.prev.check_pos("VX", exclude="VX+")
-            )
-
-            # 예외 5
-            available = available and not self._check_next_is_unavailable_split()
-
-        return available
+        pass
 
     def _ec(self) -> bool:
         """
@@ -306,46 +159,7 @@ class SentenceSplitter(SentenceProcessor):
                 2. 현재 문자 뒤의 공백(SP)을 제외한 다음 문자가 긍정지정사(VCP) 조사(J*), 보조용언(VX) 중 하나이면 분할하지 않는다.
                 3. 현재 문자 뒤로 등장하는 한글 문자열이 몇가지 분할하지 않아야 하는 경우에 속하면 분할하지 않는다.
         """
-        available = False
-        permission = False
-
-        # 연결어미 분할 규칙
-        if (
-            self._check_text("다")
-            and self._check_pos("EC", exclude="+J")
-            and not self._check_next_skip_sp_pos("EC")
-        ):
-            # 예외 1
-            available = not self._check_non_doubled_comma()
-
-            # 예외 2
-            available = available and not self._check_next_skip_sp_pos(
-                ("VCP", "J", "VX"),
-                exclude=("MAJ", "JAMO", "EMOJI", "+J", "+VCP", "+VX"),
-            )
-
-            # 예외 3
-            available = available and not self._check_next_is_unavailable_split()
-
-        if available:
-            # 허용 1:
-            permission = self._check_prev_pos("EP") and self._check_next_skip_sp_pos(
-                ("SF", "SY", "SSO", "QTO", "EMOJI")
-            )
-
-            # 허용 2:
-            permission = permission or (
-                self._check_prev_pos("EP") and self._check_next_skip_sp_pos("NP", "MAJ")
-            )
-
-            # 허용 3:
-            permission = permission or (
-                self._check_prev_text("니")
-                and self._check_prev_pos("EC")
-                and not (self._check_next_text("만") and self._check_next_pos("EC"))
-            )
-
-        return available and permission
+        pass
 
     def _etn(self) -> bool:
         """
@@ -368,43 +182,7 @@ class SentenceSplitter(SentenceProcessor):
                 5. 현재 문자 뒤의 명사형 전성어미(ETN)을 제외한 이전의 문자와 동일한 문자가 현재 문자의 바로 뒤에 등장하면 분할하지 않는다.
                 6. 현재 문자 뒤로 등장하는 한글 문자열이 몇가지 분할하지 않아야 하는 경우에 속하면 분할하지 않는다.
         """
-        available = False
-
-        if (
-            self._check_pos("ETN", exclude=("+J", "XS"))
-            and not self._check_next_skip_sp_pos("ETN")
-            and not self._check_text("기", "길")
-        ):
-            # 예외 1
-            available = not self._check_non_doubled_comma()
-
-            # 예외 2
-            available = available and (
-                self._check_next_pos(("SP", "SF", "SY", "SSO", "QTO", "EMOJI", "JAMO"))
-            )
-
-            # 예외 3
-            available = available and not self._check_next_skip_sp_pos(
-                ("J", "VV", "VA", "VX"),
-                exclude=("MAJ", "EMOJI", "JAMO", "+J"),
-            )
-
-            # 예외 4
-            available = available and not self._check_next_skip_spsf_pos(("MM", "SSC"))
-
-            # 예외 5
-            available = available and not (
-                self._check_next_skip_all_s_text(
-                    self._prev_skip("ETN")
-                    .prev_skip(*self._all_s_poses, exclude=self._all_s_exclude)
-                    .text
-                )
-            )
-
-            # 예외 6
-            available = available and not self._check_next_is_unavailable_split()
-
-        return available
+        pass
 
     def _etm(self) -> bool:
         """
@@ -429,34 +207,7 @@ class SentenceSplitter(SentenceProcessor):
                 3. 현재 문자 뒤의 공백(SP)을 제외한 다음 문자가 조사(J*)이면 분할하지 않는다.
                 4. 현재 문자 뒤로 등장하는 한글 문자열이 몇가지 분할하지 않아야 하는 경우에 속하면 분할하지 않는다.
         """
-        available = False
-        permission = False
-
-        if self._check_pos(
-            "ETM", exclude=("+J", "XS")
-        ) and not self._check_next_skip_sp_pos("ETM"):
-            # 예외 1
-            available = not self._check_non_doubled_comma()
-
-            # 예외 2
-            available = available and not self._check_next_skip_all_s_pos("NNB")
-
-            # 예외 3
-            available = available and not self._check_next_skip_sp_pos(
-                "J", exclude=("MAJ", "EMOJI", "JAMO", "+J")
-            )
-
-            # 예외 4
-            available = available and not self._check_next_is_unavailable_split()
-
-        if available:
-            # 허용 1
-            permission = self._check_prev_texts("다능")
-
-            # 허용 2
-            permission = permission or self._check_next_skip_sp_pos("SE")
-
-        return available and permission
+        pass
 
     def _char(self):
         """
@@ -473,25 +224,7 @@ class SentenceSplitter(SentenceProcessor):
                 듯 규칙 1. 현재 문자가 의존명사(NNB)이면서 '듯'이고 공백(SP) 종결부호(SF)를 제외한 다음 문자가 한글 자모(JAMO), 이모지(EMOJI), 말 줄임표(SE)
                         중 하나이면 현재 문자 뒤로 이어지는 모든 자모(JAMO) 및 이모지(EMOJI) 뒤의 문자가 동사가 아닌 경우 분할한다.
         """
-
-        # 듯 규칙 1.
-        if (
-            self._check_text("듯")
-            and self._check_pos("NNB")
-            and (
-                self._check_next_skip_spsf_pos(("EMOJI", "JAMO"))
-                or self._check_next_skip_spsf_text("…")
-            )
-        ):
-            _next = self.syllable.next_skip("SP")
-            _cur_cnt, _max_cnt = 0, 5
-            while _cur_cnt < _max_cnt and not _next.check_pos("JAMO", "EMOJI"):
-                _next = _next.next_skip("SP")
-                _cur_cnt += 1
-            if not _next.check_pos("VV"):
-                return True
-
-        return False
+        pass
 
     #####################
     # Utility functions #
@@ -499,17 +232,15 @@ class SentenceSplitter(SentenceProcessor):
 
     @staticmethod
     def _tuple(exclude):
-        if isinstance(exclude, str):
-            exclude = (exclude,)
-        return exclude
+        pass
 
     @lru_cache(1)
     def _prev(self):
-        return self.syllable.prev
+        pass
 
     @lru_cache(1)
     def _next(self):
-        return self.syllable.next
+        pass
 
     @lru_cache(30)
     def _prev_skip(
@@ -517,10 +248,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.prev_skip(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _next_skip(
@@ -528,10 +256,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.next_skip(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_pos(
@@ -539,10 +264,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_text(
@@ -550,10 +272,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_pos(
@@ -561,10 +280,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.next.check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_pos(
@@ -572,10 +288,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.prev.check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_text(
@@ -583,10 +296,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.next.check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_text(
@@ -594,10 +304,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.prev.check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_pos(
@@ -607,13 +314,7 @@ class SentenceSplitter(SentenceProcessor):
         skip=None,
         skip_exclude=None,
     ):
-        return self.syllable.next_skip(
-            *self._tuple(skip),
-            exclude=self._tuple(skip_exclude),
-        ).check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_skip_pos(
@@ -623,13 +324,7 @@ class SentenceSplitter(SentenceProcessor):
         skip=None,
         skip_exclude=None,
     ):
-        return self.syllable.prev_skip(
-            *self._tuple(skip),
-            exclude=self._tuple(skip_exclude),
-        ).check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_text(
@@ -639,13 +334,7 @@ class SentenceSplitter(SentenceProcessor):
         skip=None,
         skip_exclude=None,
     ):
-        return self.syllable.next_skip(
-            *self._tuple(skip),
-            exclude=self._tuple(skip_exclude),
-        ).check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_skip_text(
@@ -655,13 +344,7 @@ class SentenceSplitter(SentenceProcessor):
         skip=None,
         skip_exclude=None,
     ):
-        return self.syllable.prev_skip(
-            *self._tuple(skip),
-            exclude=self._tuple(skip_exclude),
-        ).check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_sp_pos(
@@ -669,10 +352,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.next_skip("SP").check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_from_current_pos(
@@ -680,10 +360,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.next_skip_from_current("SP").check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_skip_sp_pos(
@@ -691,10 +368,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.prev_skip("SP").check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_spsf_pos(
@@ -702,10 +376,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.next_skip("SP", "SF").check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_skip_spsf_pos(
@@ -713,10 +384,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.prev_skip("SP", "SF").check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_sp_text(
@@ -724,10 +392,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.next_skip("SP").check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_skip_sp_text(
@@ -735,10 +400,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.prev_skip("SP").check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_spsf_text(
@@ -746,10 +408,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.next_skip("SP", "SF").check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_skip_spsf_text(
@@ -757,10 +416,7 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.prev_skip("SP", "SF").check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_all_s_pos(
@@ -768,13 +424,7 @@ class SentenceSplitter(SentenceProcessor):
         poses=None,
         exclude=None,
     ):
-        return self.syllable.next_skip(
-            *self._all_s_poses,
-            exclude=self._all_s_exclude,
-        ).check_pos(
-            *self._tuple(poses),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_next_skip_all_s_text(
@@ -782,65 +432,40 @@ class SentenceSplitter(SentenceProcessor):
         texts=None,
         exclude=None,
     ):
-        return self.syllable.next_skip(
-            *self._all_s_poses,
-            exclude=self._all_s_exclude,
-        ).check_text(
-            *self._tuple(texts),
-            exclude=self._tuple(exclude),
-        )
+        pass
 
     @lru_cache(30)
     def _check_texts(self, texts=None):
-        return self.syllable.check_texts(*self._tuple(texts))
+        pass
 
     @lru_cache(30)
     def _check_prev_texts(self, texts=None):
-        return self.syllable.prev.check_texts(*self._tuple(texts))
+        pass
 
     @lru_cache(30)
     def _check_next_skip_all_s_texts(self, texts=None):
-        return self.syllable.next_skip_from_current(
-            *self._all_s_poses,
-            exclude=self._all_s_exclude,
-        ).check_texts(*self._tuple(texts))
+        pass
 
     @lru_cache(30)
     def _check_next_skip_all_s_multiple_texts(self, *texts):
-        next_skip_all_s = self.syllable.next_skip(
-            *self._all_s_poses,
-            exclude=self._all_s_exclude,
-        )
-
-        for text in texts:
-            if next_skip_all_s.check_texts(*self._tuple(text)):
-                return True
-
-        return False
+        pass
 
     @lru_cache(1)
     def _check_next_is_unavailable_split(self):
-        return self._check_next_skip_all_s_multiple_texts(*self.unavailable_next)
+        pass
 
     @lru_cache(1)
     def _check_non_doubled_comma(self):
-        next_all_s = self._next_skip(self._all_s_poses, exclude=self._all_s_exclude)
-        return next_all_s.check_text(",") and not next_all_s.next_skip("SP").check_text(
-            ","
-        )
+        pass
 
     @lru_cache(30)
     def _check_prev_texts_from_before(self, text):
-        _prev = self.syllable
-        for _ in text:
-            _prev = _prev.prev
-
-        return _prev.check_texts(text)
+        pass
 
     @lru_cache(30)
     def _check_multiple_prev_texts_from_before(self, *texts):
-        return any(self._check_prev_texts_from_before(t) for t in texts)
+        pass
 
     @lru_cache(30)
     def _check_multiple_next_texts_from_current(self, *texts):
-        return any(self._check_texts(t) for t in texts)
+        pass

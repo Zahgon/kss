@@ -174,104 +174,31 @@ do_not_split_pattern = re.compile("기자[가-힣]")
 
 
 def _split_spam(sents, found_media):
-    sents_for_use = []
-    for sent in sents:
-        drop_sent = False
-        for check_word, found_word in found_media.items():
-            if sent.endswith(found_word):
-                drop_sent = True
-                break
-            elif f"{check_word} " in sent or f"{check_word}\n" in sent:
-                drop_sent = True
-                break
-
-        if not drop_sent:
-            for pattern in split_patterns:
-                if pattern.search(sent):
-                    do_not_split = False
-                    if do_not_split_pattern.search(sent):
-                        do_not_split = True
-
-                    if not do_not_split:
-                        drop_sent = True
-                        break
-
-        if drop_sent:
-            continue
-        else:
-            sents_for_use.append(sent)
-
-    return sents_for_use
+    pass
 
 
 def _replace_spam(sents):
-    sents_for_use = []
-    for sent in sents:
-        do_not_split = False
-        if do_not_split_pattern.search(sent):
-            do_not_split = True
-
-        if not do_not_split:
-            for pattern, repl in remove_patterns.items():
-                sent = pattern.sub(repl, sent)
-        sents_for_use.append(sent)
-    return sents_for_use
+    pass
 
 
 def _should_skip(text):
-    for bad in skip_words:
-        if bad in text:
-            return True
-    return False
+    pass
 
 
 def _normalize_text(text, postprocess):
-    if not postprocess:
-        for before, after in normalization_open.items():
-            while before in text:
-                text = text.replace(before, after)
-        for before, after in normalization_close.items():
-            while before in text:
-                text = text.replace(before, after)
-
-    for before, after in normalization_others.items():
-        while before in text:
-            text = text.replace(before, after)
-    return text
+    pass
 
 
 def _find_media(text):
-    words = text.split()
-    media_found = {}
-
-    for word in words:
-        for media in media_suffix:
-            if media in word:
-                if media not in media_found:
-                    media_found[media] = [word]
-                else:
-                    media_found[media].append(word)
-
-    return {
-        media: f"{prefix}{word}"
-        for media, word in media_found.items()
-        for prefix in ["<", "[", "(", "< ", "[ ", "( ", ""]
-    }
+    pass
 
 
 def _split_sentences(text):
-    sents = []
-    for sent in re.split(r"(?<=[.!?]\s)", text):
-        for s in re.split(r"(?<=[다요죠][.!?])(?![\"'\])>])", sent):
-            if len(s.strip()) > 0:
-                sents.append(s)
-    return sents
+    pass
 
 
 def _pre_split(text):
-    text = text.split("☞")[0]
-    text = email_pattern.split(text)[0]
-    return text
+    pass
 
 
 def clean_news(
@@ -304,38 +231,7 @@ def clean_news(
         >>> print(output)
         '에버랜드, 봄꽃 펼쳐진 '튤립축제' 오픈\\n\\n에버랜드가 오는 22일부터 봄을 상징하는 튤립 120만 송이와 함께 '튤립축제'를 오픈해 본격적인 봄의 시작을 알린다. 지난 1992년 국내 첫 튤립 축제를 연 이후 올해로 22회째를 맞이한 에버랜드 '튤립축제'는 지난해 첫 선을 보이며 좋은 반응을 얻었던 오감(五感)체험 '시크릿가든'을 리뉴얼하고, 신규 테마 꽃길을 조성하는 등 봄꽃을 활용한 다양한 볼거리를 강화한 것이 특징이다. 또한 4월 28일까지 열리는 '튤립축제'에서는 야간 개장과 함께 손님 참여요소가 늘어난 인기 공연, 퍼레이드가 재오픈하는 등 봄을 맞아 나들이 나온 상춘객들의 눈과 귀를 즐겁게 할 예정이다.'
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    min_sentences = _check_type(min_sentences, "min_sentences", int)
-    header_ratio = _check_type(header_ratio, "header_ratio", float)
-    footer_ratio = _check_type(footer_ratio, "footer_ratio", float)
-    assert 0 <= header_ratio <= 1, "header_ratio should be in [0, 1]"
-    assert 0 <= footer_ratio <= 1, "footer_ratio should be in [0, 1]"
-    assert header_ratio + footer_ratio < 1, "header_ratio + footer_ratio should be less than 1"
-    verbose = _check_type(verbose, "verbose", bool)
-    num_workers = _check_num_workers(text, num_workers)
-
-    if num_workers is not False and verbose:
-        verbose = False
-        logger.warn(
-            "Verbose mode is not supported for multiprocessing. "
-            "It will be turned off automatically."
-        )
-
-    return _run_job(
-        func=partial(
-            _clean_news,
-            min_sentences=min_sentences,
-            header_ratio=header_ratio,
-            footer_ratio=footer_ratio,
-            verbose=verbose,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _clean_news(
@@ -345,55 +241,4 @@ def _clean_news(
     footer_ratio: float = 0.4,
     verbose: bool = False,
 ):
-    input_text = text
-    skip_sample = False
-    # for debug.
-
-    if _should_skip(text):
-        skip_sample = True
-
-    if not skip_sample:
-        text = _normalize_text(text, postprocess=False)
-        text = _pre_split(text)
-        sents = _split_sentences(text)
-
-        if len(sents) <= min_sentences:
-            skip_sample = True
-        else:
-            found_media = _find_media(text)
-
-            if len(sents) <= min_sentences * 2:
-                sents = _replace_spam(sents)
-                sents = _split_spam(sents, found_media)
-
-                if len([s for s in sents if len(s.strip()) > 0]) == 0:
-                    skip_sample = True
-                else:
-                    text = " ".join(sents)
-                    text = _normalize_text(text, postprocess=True).strip()
-
-            else:
-                num_header_sent = int(len(sents) * header_ratio)
-                num_footer_sent = int(len(sents) * footer_ratio)
-
-                header_sents = sents[:num_header_sent]
-                middle_sents = sents[num_header_sent:-num_footer_sent]
-                footer_sents = sents[-num_footer_sent:]
-
-                header_sents = _replace_spam(header_sents)
-                footer_sents = _split_spam(footer_sents, found_media)
-                text = " ".join(header_sents + middle_sents + footer_sents)
-                text = _normalize_text(text, postprocess=True).strip()
-
-    if len(text.strip()) == 0:
-        skip_sample = True
-
-    if skip_sample:
-        output_text = None
-    else:
-        output_text = text
-
-    if verbose:
-        print(highlight_diffs(input_text, output_text).replace("\n", "\\n"))
-
-    return output_text
+    pass

@@ -51,48 +51,16 @@ class Element(object):
         self._prev = _prev
 
     def next_skip(self, *poses, exclude=None):
-        _next = self.next
-
-        if isinstance(_next, Empty):
-            return _next
-
-        while _next.check_pos(*poses, exclude=exclude):
-            _next = _next.next
-
-        return _next
+        pass
 
     def prev_skip(self, *poses, exclude=None):
-        _prev = self.prev
-
-        if isinstance(_prev, Empty):
-            return _prev
-
-        while _prev.check_pos(*poses, exclude=exclude):
-            _prev = _prev.prev
-
-        return _prev
+        pass
 
     def prev_skip_from_current(self, *poses, exclude=None):
-        _prev = self
-
-        if isinstance(_prev, Empty):
-            return _prev
-
-        while _prev.check_pos(*poses, exclude=exclude):
-            _prev = _prev.prev
-
-        return _prev
+        pass
 
     def next_skip_from_current(self, *poses, exclude=None):
-        _next = self
-
-        if isinstance(_next, Empty):
-            return _next
-
-        while _next.check_pos(*poses, exclude=exclude):
-            _next = _next.next
-
-        return _next
+        pass
 
     def check_pos(self, *poses, exclude: Optional[Tuple] = None) -> bool:
         """
@@ -105,14 +73,7 @@ class Element(object):
         Returns:
             bool: whether pos of the syllable is contained in input poses or not.
         """
-        for target in poses:
-            if target in self.pos:
-                if exclude is not None:
-                    for e in exclude:
-                        if e in self.pos:
-                            return False
-                return True
-        return False
+        pass
 
     def check_text(self, *texts, exclude: Optional[Tuple] = None) -> bool:
         """
@@ -125,14 +86,7 @@ class Element(object):
         Returns:
             bool: whether text of the syllable is contained in input texts or not.
         """
-        for target in texts:
-            if target in self.text:
-                if exclude is not None:
-                    for e in exclude:
-                        if e in self.text:
-                            return False
-                return True
-        return False
+        pass
 
     def check_pos_and_text(
         self,
@@ -153,14 +107,7 @@ class Element(object):
         Returns:
             bool: whether pos and text of the syllable are contained in input poses and texts.
         """
-        if isinstance(poses, str):
-            poses = (poses,)
-        if isinstance(texts, str):
-            texts = (texts,)
-
-        return self.check_pos(*poses, exclude=exclude_poses) and self.check_text(
-            *texts, exclude=exclude_texts
-        )
+        pass
 
     def check_texts(self, text: str) -> bool:
         """
@@ -172,13 +119,4 @@ class Element(object):
         Returns:
             bool: whether text of the current and next syllables re contained in input text or not.
         """
-        _node = self
-        matches = []
-        for char in text:
-            same = _node.text == char
-            if same is False:
-                return False
-            else:
-                matches.append(same)
-                _node = _node.next
-        return all(matches)
+        pass

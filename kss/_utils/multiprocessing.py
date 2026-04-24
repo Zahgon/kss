@@ -22,15 +22,4 @@ def _run_job(
     Returns:
         Union[Any, List[Any]]: output of the job.
     """
-    if num_workers is False:
-        if isinstance(inputs, str):
-            output = func(inputs)
-        else:
-            output = [func(i) for i in inputs]
-        return output
-    else:
-        with mp.Pool(num_workers) as pool:
-            output = pool.map(func, inputs)
-            pool.close()
-            pool.join()
-            return output
+    pass

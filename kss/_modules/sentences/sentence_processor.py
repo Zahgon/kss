@@ -35,41 +35,15 @@ class SentenceProcessor:
 
     @staticmethod
     def _replace(text: str, purpose_dict: dict, restore: bool = False):
-        for k, v in purpose_dict.items():
-            if restore is True:
-                source, target = v, k
-            else:
-                source, target = k, v
-
-            if source in text:
-                text = text.replace(source, target)
-
-        return text
+        pass
 
     def _add_url_or_email(self, text):
-        _url_or_email = {
-            k: str(abs(hash(k)))
-            for k in re.findall(url_pattern, text) + re.findall(email_pattern, text)
-        }
-        self._normal_backup.update(_url_or_email)
+        pass
 
     @lru_cache(100)
     def backup(self, inputs: str):
-        self._add_url_or_email(inputs)
-        inputs = self._replace(inputs, self._normal_backup)
-
-        for source, purpose_dict in self._heavy_backup.items():
-            if source in inputs:
-                inputs = self._replace(inputs, purpose_dict, restore=False)
-
-        return inputs
+        pass
 
     @lru_cache(100)
     def restore(self, outputs: str, inputs: str):
-        outputs = self._replace(outputs, self._normal_backup, restore=True)
-
-        for source, purpose_dict in self._heavy_backup.items():
-            if source in inputs:
-                outputs = self._replace(outputs, purpose_dict, restore=True)
-
-        return outputs
+        pass

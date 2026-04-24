@@ -120,31 +120,7 @@ def romanize(
     References:
         This was copied from [korean-romanizer](https://github.com/osori/korean-romanizer) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    use_morpheme_info = _check_type(use_morpheme_info, "use_morpheme_info", bool)
-    _check_analyzer_backend_mecab_pecab_only(backend)
-    convert_english_to_hangul_phonemes = _check_type(convert_english_to_hangul_phonemes,
-                                                     "convert_english_to_hangul_phonemes", bool)
-    convert_numbers_to_hangul_phonemes = _check_type(convert_numbers_to_hangul_phonemes,
-                                                     "convert_numbers_to_hangul_phonemes", bool)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=partial(
-            _romanize,
-            use_morpheme_info=use_morpheme_info,
-            backend=backend,
-            convert_english_to_hangul_phonemes=convert_english_to_hangul_phonemes,
-            convert_numbers_to_hangul_phonemes=convert_numbers_to_hangul_phonemes,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _romanize(
@@ -154,44 +130,4 @@ def _romanize(
     convert_english_to_hangul_phonemes=False,
     convert_numbers_to_hangul_phonemes=False,
 ):
-    if use_morpheme_info:
-        pronounced = g2p(
-            text,
-            backend=backend,
-            convert_english_to_hangul_phonemes=convert_english_to_hangul_phonemes,
-            convert_numbers_to_hangul_phonemes=convert_numbers_to_hangul_phonemes,
-        )
-    else:
-        pronounced = pronounce(
-            text,
-            convert_english_to_hangul_phonemes=convert_english_to_hangul_phonemes,
-            convert_numbers_to_hangul_phonemes=convert_numbers_to_hangul_phonemes,
-        )
-
-    romanized_text = ""
-    for char in pronounced:
-        if re.match(r"[가-힣ㄱ-ㅣ]", char):
-            s = Syllable(char)
-
-            if not s.medial and not s.final:
-                # s is NOT a full syllable (e.g. characters)
-                if onset.get(chr(s.initial)):
-                    romanized_text += onset[chr(s.initial)]
-                elif vowel.get(chr(s.initial)):
-                    romanized_text += vowel[chr(s.initial)]
-                else:
-                    romanized_text += unidecode(char)
-            else:
-                # s is a full syllable
-                romanized_text += onset[s.initial] + vowel[s.medial] + coda[s.final]
-
-        else:
-            romanized_text += char
-
-    # 유음화 / 비음화 처리
-    if use_morpheme_info:
-        # 울릉도 ulreungdo -> ulleungdo
-        # 대관령 daegwalryeong -> daegwallyeong
-        romanized_text = romanized_text.replace("lr", "ll")
-
-    return romanized_text
+    pass

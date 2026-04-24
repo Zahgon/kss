@@ -78,46 +78,12 @@ def hangulize(
     References:
         This was copied from [hangulize](https://github.com/sublee/hangulize) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    lang = _check_lang(lang)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=partial(_hangulize, code=lang),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _check_lang(lang: str):
-    lang = lang.lower()
-    lang = _check_type(lang, "lang", str)
-
-    if lang not in supported_langs:
-        error_message = f"'{lang}' is not supported language code." \
-                        f"\nSupported language codes are the following:\n{list(supported_langs.items())}"
-        closest_lang = _find_closest_lang(lang)
-        if closest_lang:
-            error_message += f"\n\nDid you mean '{closest_lang}'?"
-        raise ValueError(error_message)
-
-    return lang
+    pass
 
 
 def _find_closest_lang(lang, min_distance=0.5):
-    current_min_distance = 99
-    closest_lang = None
-    for supported_lang in supported_langs:
-        dist = distance.nlevenshtein(lang, supported_lang)
-        if dist < current_min_distance and dist <= min_distance:
-            current_min_distance = dist
-            closest_lang = supported_lang
-
-    if closest_lang is None:
-        return None
-    else:
-        return closest_lang, supported_langs[closest_lang]
+    pass

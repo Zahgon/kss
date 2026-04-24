@@ -212,10 +212,7 @@ class BrazilianPortuguese(Language):
     ])
 
     def normalize(self, string):
-        return normalize_roman(string, {
-            u'Ã': u'ã', u'Á': u'á', u'Â': u'â', u'Ç': u'ç', u'É': u'é',
-            u'Ê': u'ê', u'ê': u'é', u'Õ': u'õ', u'Ó': u'ó', u'Ô': u'ô'
-        })
+        pass
 
 
 __lang__ = BrazilianPortuguese

@@ -38,16 +38,16 @@ class Empty(object):
         pass
 
     def next_skip(self, *poses, exclude=None):
-        return self
+        pass
 
     def prev_skip(self, *poses, exclude=None):
-        return self
+        pass
 
     def prev_skip_from_current(self, *poses, exclude=None):
-        return self
+        pass
 
     def next_skip_from_current(self, *poses, exclude=None):
-        return self
+        pass
 
     def check_pos(self, *poses, exclude: Optional[List[str]] = None) -> bool:
         """
@@ -60,7 +60,7 @@ class Empty(object):
         Returns:
             bool: whether pos of the syllable is contained in poses or not.
         """
-        return False
+        pass
 
     def check_text(self, *texts, exclude: Optional[List[str]] = None) -> bool:
         """
@@ -73,7 +73,7 @@ class Empty(object):
         Returns:
             bool: whether text of the syllable is contained in pos_list or not.
         """
-        return False
+        pass
 
     def check_pos_and_text(
         self,
@@ -105,4 +105,4 @@ class Empty(object):
         Returns:
             bool: whether text of the current and next syllables re contained in input text or not.
         """
-        return False
+        pass

@@ -45,38 +45,8 @@ def paradigm(
     References:
         This was copied from [KoParadigm](https://github.com/Kyubyong/KoParadigm) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return [] if isinstance(text, list) else {}
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    if num_workers is not False and verbose:
-        verbose = False
-        logger.warn(
-            "Verbose mode is not supported for multiprocessing. "
-            "It will be turned off automatically."
-        )
-
-    return _run_job(
-        func=partial(_paradigm, verbose=verbose),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _paradigm(text: str, verbose: bool = False):
-    outputs = paradigm_obj.conjugate(text)
-
-    if not outputs:
-        return {}
-
-    if verbose:
-        prettify(outputs)
-
-    outputs_dict = {}
-    for output in outputs:
-        outputs_dict[output[0]] = output[1]
-
-    return outputs_dict
+    pass

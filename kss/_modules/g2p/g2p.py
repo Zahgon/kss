@@ -78,36 +78,7 @@ def g2p(
     References:
         This was copied from [g2pk](https://github.com/Kyubyong/g2pk) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    descriptive = _check_type(descriptive, "descriptive", bool)
-    group_vowels = _check_type(group_vowels, "group_vowels", bool)
-    to_syllable = _check_type(to_syllable, "to_syllable", bool)
-    convert_english_to_hangul_phonemes = _check_type(convert_english_to_hangul_phonemes,
-                                                     "convert_english_to_hangul_phonemes", bool)
-    convert_numbers_to_hangul_phonemes = _check_type(convert_numbers_to_hangul_phonemes,
-                                                     "convert_numbers_to_hangul_phonemes", bool)
-    verbose = _check_type(verbose, "verbose", bool)
-    num_workers = _check_num_workers(text, num_workers)
-    _check_analyzer_backend_mecab_pecab_only(backend)
-
-    return _run_job(
-        func=partial(
-            _g2p,
-            descriptive=descriptive,
-            group_vowels=group_vowels,
-            to_syllable=to_syllable,
-            convert_english_to_hangul_phonemes=convert_english_to_hangul_phonemes,
-            convert_numbers_to_hangul_phonemes=convert_numbers_to_hangul_phonemes,
-            backend=backend,
-            verbose=verbose,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _g2p(
@@ -156,55 +127,4 @@ def _g2p(
     Returns:
         str: Phoneme string
     """
-    # 1. idioms
-    text = convert_idioms(
-        text=text,
-        descriptive=descriptive,
-        convert_english_to_hangul_phonemes=convert_english_to_hangul_phonemes,
-        convert_numbers_to_hangul_phonemes=convert_numbers_to_hangul_phonemes,
-        verbose=verbose,
-    )
-
-    # 2 English to Hangul
-    if convert_english_to_hangul_phonemes:
-        text = convert_eng(text)
-
-    # 3. annotate
-    text = annotate(text, backend=backend)
-
-    # 4. Spell out arabic numbers
-    if convert_numbers_to_hangul_phonemes:
-        text = convert_num(text)
-
-    # 5. decompose
-    inp = h2j(text)
-
-    # 6. special
-    for func in (jyeo, ye, consonant_ui, josa_ui, vowel_ui, \
-                 jamo, rieulgiyeok, rieulbieub, verb_nieun, \
-                 balb, palatalize, modifying_rieul):
-        inp = func(inp, descriptive, verbose)
-    inp = re.sub("/[PJEB]", "", inp)
-
-    # 7. regular table: batchim + onset
-    for str1, str2, rule_ids in table:
-        _inp = inp
-        inp = re.sub(str1, str2, inp)
-
-        if len(rule_ids) > 0:
-            rule = "\n".join(rule_id2text.get(rule_id, "") for rule_id in rule_ids)
-        else:
-            rule = ""
-        gloss(verbose, inp, _inp, rule)
-
-    # 8 link
-    for func in (link1, link2, link3, link4):
-        inp = func(inp, descriptive, verbose)
-
-    # 9. postprocessing
-    if group_vowels:
-        inp = group(inp)
-
-    if to_syllable:
-        inp = j2h(inp, add_placeholder_for_leading_vowels=True)
-    return inp
+    pass

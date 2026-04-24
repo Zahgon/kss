@@ -130,123 +130,38 @@ IDA_SUFFIXES = {
 
 
 def isJaeum(u):
-    if u:
-        for c in u:
-            if c not in Jaeum.Codes:
-                break
-        else:
-            return True
-    return False
+    pass
 
 
 def isMoeum(u):
-    if u:
-        for c in u:
-            if c not in Moeum.Codes:
-                break
-        else:
-            return True
-    return False
+    pass
 
 
 def ishangul(u):
-    if u:
-        for c in u:
-            if not _ishangul(c):
-                break
-        else:
-            return True
-    return False
+    pass
 
 
 def join(codes):
     """ Join function which makes hangul syllable from jamos """
-    if len(codes) != 3:
-        raise UnicodeHangulError("needs 3-element tuple")
-    if not codes[0] or not codes[1]:  # single jamo
-        return codes[0] or codes[1]
-
-    return chr(
-        0xac00 + (
-            Choseong.index(codes[0]) * NJUNGSEONG +
-            Jungseong.index(codes[1])
-        ) * NJONGSEONG + Jongseong.index(codes[2])
-    )
+    pass
 
 
 def split(code):
     """ Split function which splits hangul syllable into jamos """
-    if len(code) != 1 or not _ishangul(code):
-        raise UnicodeHangulError("needs 1 hangul letter")
-    if code in Jaeum.Codes:
-        return (code, Null, Null)
-    if code in Moeum.Codes:
-        return (Null, code, Null)
-
-    code = ord(code) - 0xac00
-    return (
-        Choseong[int(code / (NJUNGSEONG * NJONGSEONG))],  # Python3000 safe
-        Jungseong[int(code / NJONGSEONG) % NJUNGSEONG],
-        Jongseong[code % NJONGSEONG]
-    )
+    pass
 
 
 def conjoin(s):
-    obuff = []
-    ncur = 0
-
-    while ncur < len(s):
-        c = s[ncur]
-        if JBASE_CHOSEONG <= c <= u'\u1112' or c == CHOSEONG_FILLER:  # starts with choseong
-            if len(s) > ncur + 1 and JUNGSEONG_FILLER <= s[ncur + 1] <= u'\u1175':
-                cho = Choseong[ord(c) - ord(JBASE_CHOSEONG)]
-                jung = Jungseong[ord(s[ncur + 1]) - ord(JBASE_JUNGSEONG)]
-                if len(s) > ncur + 2 and JBASE_JONGSEONG <= s[ncur + 2] <= u'\u11C2':
-                    jong = Jongseong[ord(s[ncur + 2]) - ord(JBASE_JONGSEONG) + 1]
-                    ncur += 2
-                else:
-                    jong = Null
-                    ncur += 1
-                obuff.append(join([cho, jung, jong]))
-            else:
-                obuff.append(join([Choseong[ord(c) - ord(JBASE_CHOSEONG)], Null, Null]))
-        elif JBASE_JUNGSEONG <= c <= u'\u1175':
-            obuff.append(join([Null, Jungseong[ord(c) - ord(JBASE_JUNGSEONG)], Null]))
-        else:
-            obuff.append(c)
-        ncur += 1
-
-    return u''.join(obuff)
+    pass
 
 
 def disjoint(s):
-    obuff = []
-    for c in s:
-        if _ishangul(c):
-            cho, jung, jong = split(c)
-            if cho:
-                obuff.append(chr(ord(JBASE_CHOSEONG) + Choseong.index(cho)))
-            else:
-                obuff.append(CHOSEONG_FILLER)
-
-            if jung:
-                obuff.append(chr(ord(JBASE_JUNGSEONG) + Jungseong.index(jung)))
-            else:
-                obuff.append(JUNGSEONG_FILLER)
-
-            if jong:
-                obuff.append(chr(ord(JBASE_JONGSEONG) + Jongseong.index(jong) - 1))
-        else:
-            obuff.append(c)
-    return u''.join(obuff)
+    pass
 
 
 def _has_final(c):
     # for internal use only
-    if u'\uac00' <= c <= u'\ud7a3':  # hangul
-        return 1, (ord(c) - 0xac00) % 28 > 0
-    else:
-        return 0, c in u'013678.bklmnptLMNRZ'
+    pass
 
 
 # Iterator Emulator for ancient versions before 2.1
@@ -259,10 +174,7 @@ except:
             self.ptr = 0
 
         def next(self):
-            try:
-                return self.obj[self.ptr]
-            finally:
-                self.ptr += 1
+            pass
 
 # Nested scope lambda emulation for versions before 2.2
 import sys
@@ -280,63 +192,4 @@ del sys
 
 
 def format(fmtstr, *args, **kwargs):
-    if kwargs:
-        argget = lambda: kwargs
-        if plambda:
-            argget = plambda(kwargs)
-    else:
-        argget = iter(args).next
-
-    obuff = []
-    ncur = escape = fmtinpth = 0
-    ofmt = fmt = u''
-
-    while ncur < len(fmtstr):
-        c = fmtstr[ncur]
-
-        if escape:
-            obuff.append(c)
-            escape = 0
-            ofmt = u''
-        elif c == u'\\':
-            escape = 1
-        elif fmt:
-            fmt += c
-            if not fmtinpth and c.isalpha():
-                ofmt = fmt % argget()
-                obuff.append(ofmt)
-                fmt = u''
-            elif fmtinpth and c == u')':
-                fmtinpth = 0
-            elif c == u'(':
-                fmtinpth = 1
-            elif c == u'%':
-                obuff.append(u'%')
-        elif c == u'%':
-            fmt += c
-            ofmt = u''
-        else:
-            if ofmt and ALT_SUFFIXES.has_key(c):
-                obuff.append(ALT_SUFFIXES[c][
-                                 _has_final(ofmt[-1])[1] and 1 or 0
-                                 ])
-            elif ofmt and IDA_SUFFIXES.has_key(fmtstr[ncur:ncur + 3]):
-                sel = IDA_SUFFIXES[fmtstr[ncur:ncur + 3]]
-                ishan, hasfinal = _has_final(ofmt[-1])
-
-                if hasfinal:
-                    obuff.append(sel[1])
-                elif ishan:
-                    if sel[0]:
-                        obuff[-1] = obuff[-1][:-1] + chr(ord(ofmt[-1]) + sel[0])
-                else:
-                    obuff.append(sel[0] and sel[1])
-                ncur += 2
-            else:
-                obuff.append(c)
-
-            ofmt = u''
-
-        ncur += 1
-
-    return u''.join(obuff)
+    pass

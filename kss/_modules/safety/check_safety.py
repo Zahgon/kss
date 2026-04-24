@@ -47,64 +47,16 @@ def is_unsafe(
         >>> is_unsafe(text, return_matches=True)
         [[], ['씨발']]
     """
-    text, finish = _check_text(text)
-    return_matches = _check_type(return_matches, "return_matches", bool)
-    num_workers = _check_num_workers(text, num_workers)
-
-    if finish:
-        return [] if return_matches else False
-
-    return _run_job(
-        func=partial(_is_unsafe, return_matches=return_matches),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _is_unsafe(text: str, return_matches: bool = False):
-    if return_matches:
-        matches = _is_unsafe_regex(text, return_matches=True) + _is_unsafe_dict(text, return_matches=True)
-        deduplicated_matches = []
-        for match in matches:
-            if match not in deduplicated_matches:
-                deduplicated_matches.append(match)
-        return deduplicated_matches
-    else:
-        return _is_unsafe_regex(text, return_matches=False) or _is_unsafe_dict(text, return_matches=False)
+    pass
 
 
 def _is_unsafe_regex(text: str, return_matches: bool = False):
-    longest_matches = []
-    for match in pattern.findall(text):
-        longest = ""
-        for m in match:
-            if len(m) > len(longest):
-                longest = m
-        if len(longest) > 0:
-            longest_matches.append(longest)
-
-    if return_matches:
-        return longest_matches
-    else:
-        return len(longest_matches) > 0
+    pass
 
 
 def _is_unsafe_dict(text: str, return_matches: bool = False):
-    matches = []
-    for word in bad_words:
-        if word in text:
-            found_bad_words = True
-            if word in exceptions:
-                for exception in exceptions[word]:
-                    if exception in text:
-                        found_bad_words = False
-                        break
-            if found_bad_words:
-                if return_matches:
-                    matches.append(word)
-                else:
-                    return True
-    if return_matches:
-        return matches
-    else:
-        return False
+    pass

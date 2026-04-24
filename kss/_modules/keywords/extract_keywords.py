@@ -59,31 +59,7 @@ def extract_keywords(
     References:
         This was copied from [KR-WordRank](https://github.com/lovit/KR-WordRank) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return []
-
-    num_keywords = _check_type(num_keywords, "num_keywords", int)
-    min_word_count = _check_type(min_word_count, "min_word_count", int)
-    max_word_length = _check_type(max_word_length, "max_word_length", int)
-    return_scores = _check_type(return_scores, "return_scores", bool)
-    noun_only = _check_type(noun_only, "noun_only", bool)
-    _check_analyzer_backend_mecab_pecab_only(backend)
-
-    if num_workers != "auto":
-        raise ValueError("`extract_keywords` does not support `num_workers` argument")
-
-    return _extract_keywords(
-        text=text,
-        num_keywords=num_keywords,
-        min_word_count=min_word_count,
-        max_word_length=max_word_length,
-        return_scores=return_scores,
-        noun_only=noun_only,
-        backend=backend,
-    )
+    pass
 
 
 def _extract_keywords(
@@ -95,20 +71,4 @@ def _extract_keywords(
     backend: str = "auto",
     noun_only: bool = True,
 ):
-    if isinstance(text, str):
-        text = [text]
-
-    wordrank_extractor = KRWordRank(
-        min_count=min_word_count,
-        max_length=max_word_length,
-        backend=backend,
-        noun_only=noun_only,
-    )
-    keywords = wordrank_extractor.extract(
-        text, num_keywords=num_keywords
-    )[0]
-
-    if return_scores:
-        return keywords
-    else:
-        return list(keywords.keys())
+    pass

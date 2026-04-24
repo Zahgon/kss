@@ -80,24 +80,8 @@ def half2full(
         >>> half2full(text)
         'ㅋㅋㅋㅋㅋㅋ'
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=_half2full,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _half2full(text: str):
-    fullwidth_text = ""
-
-    for char in text:
-        fullwidth_text += replace_map.get(char, char)
-
-    return fullwidth_text
+    pass

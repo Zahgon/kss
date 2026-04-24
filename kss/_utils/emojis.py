@@ -37,11 +37,4 @@ except Exception as e:
 
 
 def get_emoji(text):
-    emoji_list = []
-    flags = re.findall("[\U0001F1E6-\U0001F1FF]", text)
-
-    for grapheme in re.findall(r"\X", text):
-        if any(char in _emojis for char in grapheme):
-            emoji_list.append(grapheme)
-
-    return emoji_list + flags
+    pass

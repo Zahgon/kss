@@ -51,10 +51,7 @@ class SentencePreprocessor(SentenceProcessor):
         Returns:
             List[Syllable]: syllables in input text
         """
-        syllables = self._convert_morphemes_to_syllables(input_morphemes)
-        syllables = self._correct_wrong_tags(syllables)
-        syllables = self._append_space_before_emoji(syllables)
-        return syllables
+        pass
 
     def _convert_morphemes_to_syllables(
         self, input_morphemes: List[Tuple[str, str]]
@@ -68,28 +65,7 @@ class SentencePreprocessor(SentenceProcessor):
         Returns:
             List[Syllable]: syllables in input text.
         """
-
-        char_idx = 1
-        prev = Syllable(" ", "SP", idx=0)
-        syllables = [prev]
-
-        for pos in input_morphemes:
-            for char in pos[0]:
-                tag = pos[1]
-                for _func, _tag in self._correction.items():
-                    if _func(char, pos[1]):
-                        tag = _tag
-                        break
-
-                syllable = Syllable(char, tag, idx=char_idx)
-                syllable.prev = prev
-                prev.next = syllable
-                syllables.append(syllable)
-
-                prev = syllable
-                char_idx += 1
-
-        return syllables
+        pass
 
     def _correct_wrong_tags(self, syllables: List[Syllable]):
         """
@@ -101,58 +77,7 @@ class SentencePreprocessor(SentenceProcessor):
         Returns:
             List[Syllable]: syllables in input text
         """
-        for syllable in syllables:
-            if syllable.check_pos_and_text(
-                "JKS", "이"
-            ) and syllable.next.check_pos_and_text("MAG", "다"):
-                self._change_poses(syllable, "VCP", "EF")
-
-            if syllable.check_pos_and_text(
-                "EF", "네"
-            ) and syllable.next.check_pos_and_text("XSN", "용"):
-                self._change_poses(syllable, "EF", "EF")
-
-            if syllable.check_pos_and_text(
-                "EC", "까"
-            ) and syllable.next.check_pos_and_text("NNG", "용"):
-                self._change_poses(syllable, "EF", "EF")
-
-            if (
-                syllable.check_pos_and_text("EF", "을")
-                and syllable.next.check_pos_and_text("EF", "까")
-                and syllable.next.next.check_pos_and_text("XSN", "용")
-            ):
-                self._change_poses(syllable, "EF", "EF", "EF")
-
-            if (
-                syllable.check_pos_and_text("EP", "였")
-                and syllable.next.check_pos_and_text("EC", "게")
-                and syllable.next.next.check_pos_and_text("NNG", "용")
-            ):
-                self._change_poses(syllable, "EP", "EF", "EF")
-
-            if syllable.check_pos_and_text(
-                "EC", "구"
-            ) and syllable.next.check_pos_and_text("NNG", "용"):
-                self._change_poses(syllable, "EF", "EF")
-
-            if syllable.check_pos_and_text(
-                "EF", "엇"
-            ) and syllable.next.check_pos_and_text("IC", "음"):
-                self._change_poses(syllable, "EP", "ETN")
-
-            if syllable.check_pos_and_text("EC", "쥬"):
-                self._change_poses(syllable, "EF")
-
-            if syllable.check_pos_and_text(
-                "EC", "어"
-            ) and syllable.next.check_pos_and_text("EC", "용"):
-                self._change_poses(syllable, "EF", "EF")
-
-            if syllable.check_pos_and_text("UNKNOWN", "떄"):
-                self._change_poses(syllable, "NNG")
-
-        return syllables
+        pass
 
     @staticmethod
     def _change_poses(syllable: Syllable, *poses: str):
@@ -164,10 +89,7 @@ class SentencePreprocessor(SentenceProcessor):
             syllable (Syllable): input syllable
             *poses (str): poses to be changed
         """
-        _next = syllable
-        for pos in poses:
-            _next.pos = pos
-            _next = _next.next
+        pass
 
     @staticmethod
     def _append_space_before_emoji(syllables: List[Syllable]) -> List[Syllable]:
@@ -181,15 +103,4 @@ class SentencePreprocessor(SentenceProcessor):
         Returns:
             List[Syllable]: preprocessed syllables
         """
-        new_syllables = []
-        for syllable in syllables:
-            if syllable.check_pos("EMOJI") and not syllable.prev.check_pos("EMOJI"):
-                space_syllable = Syllable(" ", "SP", idx=syllable.idx)
-                if syllable.prev is not None:
-                    space_syllable.prev = syllable.prev
-                space_syllable.next = syllable
-                syllable.prev = space_syllable
-
-                new_syllables.append(space_syllable)
-            new_syllables.append(syllable)
-        return new_syllables
+        pass

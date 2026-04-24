@@ -46,35 +46,7 @@ def augment(
     References:
         This was copied from [KoEDA](https://github.com/toriving/KoEDA) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    replacement_ratio = _check_type(replacement_ratio, "replacement_ratio", float)
-    josa_correction = _check_type(josa_correction, "josa_correction", bool)
-    verbose = _check_type(verbose, "verbose", bool)
-    num_workers = _check_num_workers(text, num_workers)
-    _check_analyzer_backend_mecab_pecab_only(backend)
-
-    if num_workers is not False and verbose:
-        verbose = False
-        logger.warn(
-            "Verbose mode is not supported for multiprocessing. "
-            "It will be turned off automatically."
-        )
-
-    return _run_job(
-        func=partial(
-            _augment,
-            replacement_ratio=replacement_ratio,
-            josa_correction=josa_correction,
-            backend=backend,
-            verbose=verbose,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _augment(
@@ -84,15 +56,4 @@ def _augment(
     backend: str = "auto",
     verbose: bool = False,
 ):
-    orig_text = text
-    replacement = SynonymReplacement(backend=backend)  # I want WSD...
-    text = replacement(text, p=replacement_ratio, verbose=verbose)
-
-    if josa_correction:
-        text = correct_josa(text)
-
-    if verbose:
-        print()
-        print(highlight_diffs(orig_text, text).replace("\n", "\\n"))
-
-    return text
+    pass

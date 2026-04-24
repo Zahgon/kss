@@ -56,31 +56,7 @@ def summarize_sentences(
     References:
         This was copied from [textrankr](https://https://github.com/theeluwin/textrankr) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    _check_analyzer_backend(backend)
-    num_workers = _check_num_workers(text, num_workers)
-    max_sentences = _check_type(max_sentences, "max_sentences", int)
-    max_sentences = _check_value(
-        max_sentences, "max_sentences", lambda x: x > 0, "integer value in 1~N"
-    )
-    tolerance = _check_type(tolerance, "tolerance", float)
-
-    return _run_job(
-        func=partial(
-            _summarize_sentences,
-            backend=backend,
-            max_sentences=max_sentences,
-            tolerance=tolerance,
-            strip=strip,
-            ignores=ignores,
-        ),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def _summarize_sentences(
@@ -105,21 +81,4 @@ def _summarize_sentences(
     Returns:
         List[str]: summarized sentences
     """
-    from networkx import pagerank
-
-    # parse text
-    sentences: List[Sentence] = _parse_text_into_sentences(text, backend, strip, ignores)
-
-    # build graph
-    graph = _build_sentence_graph(sentences, tolerance=tolerance)
-
-    # run pagerank
-    pageranks: Dict[Sentence, float] = pagerank(graph, weight="weight")
-
-    # get top-k sentences
-    sentences = sorted(pageranks, key=pageranks.get, reverse=True)
-    sentences = sentences[:max_sentences]
-    sentences = sorted(sentences, key=lambda sentence: sentence.index)
-
-    # output summaries
-    return [sentence.text for sentence in sentences]
+    pass

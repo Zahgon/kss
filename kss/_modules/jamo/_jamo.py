@@ -37,19 +37,7 @@ def h2j(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.h2j,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def h2hcj(
@@ -77,19 +65,7 @@ def h2hcj(
     References:
         This was copied from [hangul-jamo](https://github.com/jonghwanhyeon/hangul-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=hangul_jamo.decompose,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def j2h(
@@ -119,22 +95,7 @@ def j2h(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-    add_placeholder_for_leading_vowels = _check_type(
-        add_placeholder_for_leading_vowels, "add_placeholder_for_leading_vowels", bool
-    )
-
-    return _run_job(
-        func=partial(_j2h, add_placeholder_for_leading_vowels=add_placeholder_for_leading_vowels),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def j2hcj(
@@ -162,18 +123,7 @@ def j2hcj(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.j2hcj,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def hcj2h(
@@ -201,19 +151,7 @@ def hcj2h(
     References:
         This was copied from [hangul-jamo](https://github.com/jonghwanhyeon/hangul-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=hangul_jamo.compose,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def hcj2j(
@@ -243,24 +181,7 @@ def hcj2j(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return text
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-    position = _check_type(position, "position", str).lower()
-
-    if position not in ["lead", "vowel", "tail"]:
-        raise ValueError("position should be one of 'lead', 'vowel', 'tail'")
-
-    return _run_job(
-        func=partial(jamo.hcj2j, position=position),
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def is_jamo(
@@ -288,20 +209,7 @@ def is_jamo(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return False
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.is_jamo,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def is_jamo_modern(
@@ -329,20 +237,7 @@ def is_jamo_modern(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return False
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.is_jamo_modern,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def is_hcj(
@@ -370,20 +265,7 @@ def is_hcj(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return False
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.is_hcj,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def is_hcj_modern(
@@ -411,20 +293,7 @@ def is_hcj_modern(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return False
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.is_hcj_modern,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
 
 
 def is_hangul_char(
@@ -452,17 +321,4 @@ def is_hangul_char(
     References:
         This was copied from [jamo](https://github.com/JDongian/python-jamo) and modified by Kss
     """
-
-    text, finish = _check_text(text)
-
-    if finish:
-        return False
-
-    text = _check_char(text)
-    num_workers = _check_num_workers(text, num_workers)
-
-    return _run_job(
-        func=jamo.is_hangul_char,
-        inputs=text,
-        num_workers=num_workers,
-    )
+    pass
